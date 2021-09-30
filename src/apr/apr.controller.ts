@@ -1,11 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 
-import {
-  STAKING_ADDRESSES,
-  WAVAX_ADDRESS,
-  WAVAX_PARTY_ADDRESS,
-  PARTY_ADDRESS,
-} from 'src/utils/constants';
+import { STAKING_ADDRESSES } from 'src/utils/constants';
 import { AprService } from './apr.service';
 
 @Controller('apr')
