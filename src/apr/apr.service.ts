@@ -80,15 +80,6 @@ export class AprService {
       stakingAddress,
     );
 
-    // How much xPARTY is staked in this piñata
-    // const poolTokenBalance = await this.getBalance(
-    //   stakingTokenAddress,
-    //   stakingAddress,
-    // );
-
-    // Total xPARTY supply
-    // const poolTokenSupply = await this.getTotalSupply(stakingTokenAddress);
-
     const [
       poolTokenBalance,
       poolTokenSupply,
@@ -119,16 +110,15 @@ export class AprService {
       ),
     ]);
 
-    if (poolTokenSupply.toString() === '0' || pooledPARTY.toString() === '0') {
-      return '0';
-    }
-
     let stakedAVAX: BigNumber;
     if (
       [token0.toLowerCase(), token1.toLowerCase()].includes(
         WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
       )
     ) {
+      if (poolTokenSupply.toString() === '0') {
+        return '0';
+      }
       //WAVAX AS BASE CASE
       stakedAVAX = (
         await this.getBalance(WAVAX_ADDRESS[this.chainId], stakingTokenAddress)
@@ -143,6 +133,12 @@ export class AprService {
         PARTY_ADDRESS[this.chainId]?.toLowerCase(),
       )
     ) {
+      if (
+        poolTokenSupply.toString() === '0' ||
+        pooledPARTY.toString() === '0'
+      ) {
+        return '0';
+      }
       //PARTY AS BASE CASE
       (stakedAVAX = await this.getBalance(
         PARTY_ADDRESS[this.chainId],
@@ -161,6 +157,12 @@ export class AprService {
         STABLE_ADDRESS[this.chainId]?.toLowerCase(),
       )
     ) {
+      if (
+        poolTokenSupply.toString() === '0' ||
+        pooledSTABLE.toString() === '0'
+      ) {
+        return '0';
+      }
       //STABLE COIN AS BASE CASE
       (stakedAVAX = await this.getBalance(
         STABLE_ADDRESS[this.chainId],
@@ -176,10 +178,9 @@ export class AprService {
         .div(poolTokenSupply);
     }
 
-    if (stakedAVAX.toString() === '0') {
+    if (stakedAVAX.toString() === '0' || pooledPARTY.toString() === '0') {
       return stakedAVAX.toString();
     }
-
     return (
       (await this.getRewardRate(stakingAddress))
         // Reward rate is per second
