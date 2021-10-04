@@ -13,14 +13,19 @@ export const PARTY_ADDRESS = {
   [ChainId.AVALANCHE]: '0x3EA3e5C6957581F3e70b2C33721D4E6844f60619',
 };
 
+export const STABLE_ADDRESS = {
+  [ChainId.FUJI]: '0x2058ec2791dD28b6f67DB836ddf87534F4Bbdf22', //FUJISTABLE
+  [ChainId.AVALANCHE]: '0xc7198437980c041c805A1EDcbA50c1Ce5db95118', //USDT
+};
+
 export const FACTORY_ADDRESS = {
   [ChainId.FUJI]: '0x79D0b125CEA315aAB0Bb1BC2322287D3EBB88E47',
   [ChainId.AVALANCHE]: '0x58A08bc28f3E8dab8Fb2773D8f243bC740398b09',
 };
 
 export const LIQUIDITY_POOL_MANAGER_ADDRESS = {
-  [ChainId.FUJI]: '0x101061ac181FEca52A69c569c0601dB6e4dd7098',
-  [ChainId.AVALANCHE]: '0x5a04d600B6a5B2D89946e839A9Af2f8BE11A1955',
+  [ChainId.FUJI]: '0x7eC89fad7eFd804e47A90cA722682b6E93c455a2',
+  [ChainId.AVALANCHE]: '0x6058e1E6f667831bFd78d56A2f25D0D2d868BD5E',
 };
 
 export const WAVAX_ADDRESS = {
@@ -31,19 +36,24 @@ export const WAVAX_ADDRESS = {
 export const WAVAX_PARTY_ADDRESS = {
   [ChainId.FUJI]: '0x4D2eF43d714308313F15660f91Ab4E4690a12D06',
   [ChainId.AVALANCHE]: '0xcD5043292d99D63f42f0447d77E5cA048506Bad6',
-}; //at fuji
+};
+
+export const WAVAX_STABLE_ADDRESS = {
+  [ChainId.FUJI]: '0xb81853e2D8cE364416B6F07866ea3647de3AF7dA',
+  [ChainId.AVALANCHE]: '0xF83575ddC6744c07Ca49a33f89E9581B9b20653E',
+};
 
 export const TREASURY_VESTER_ADDRESS = {
-  [ChainId.FUJI]: '0xDB75611F8b3E39332538d7a82196691EA9237225',
-  [ChainId.AVALANCHE]: '0xe193DeEC5FcA8D8cF4f9208599C569EaE4e57243',
+  [ChainId.FUJI]: '0x5626a50254C8ffe5D930fE50BC0C8cd683196F4a',
+  [ChainId.AVALANCHE]: '0x1C5c6AbEaeA0dC465Da03621e60aC1ffc1ea6554',
 };
 
 // THESE ARE PIÑATA ADDRESSES
 export const STAKING_ADDRESSES = {
   [ChainId.FUJI]: [
-    '0xe900817d3c830e37f6929f606a4119777942491d', //WAVAX-PARTY at FUJI
-    '0xff4ce166facef944a499c451854de0030b387893', //WAVAX-FUJISTABLE at FUJI
-    '0x5cc45bad397e5cbc224c9122d9e8f13fa7106187', //PARTY-FUJISTABLE at FUJI
+    '0x9996c356321ccf0c73035637a1f781ef8f92741b', //WAVAX-PARTY at FUJI
+    '0x4a1924322c6ac70f4f2af637767f6edc86bbfba8', //WAVAX-FUJISTABLE at FUJI
+    '0x7dfce35b2168df338ffb6dc0040b0bbf99dac94c', //PARTY-FUJISTABLE at FUJI
   ],
   [ChainId.AVALANCHE]: [
     '0x1081e6063Dbe43e7150ec7D28a705beC98dFE070', //PARTY-AVAX
@@ -1548,6 +1558,11 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
       },
       {
         internalType: 'address',
+        name: 'stableToken_',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
         name: 'treasuryVester_',
         type: 'address',
       },
@@ -1596,6 +1611,20 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
         internalType: 'uint256',
         name: '',
         type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'avaxStableTokenPair',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -1693,6 +1722,34 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
         internalType: 'bool',
         name: '',
         type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'stableToken',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'stableTokenSplit',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -1858,11 +1915,44 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
     inputs: [
       {
         internalType: 'address',
+        name: 'pair',
+        type: 'address',
+      },
+    ],
+    name: 'isStableTokenPair',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: 'avaxPartyPair_',
         type: 'address',
       },
     ],
     name: 'setavaxPartyPair',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'avaxStableTokenPair_',
+        type: 'address',
+      },
+    ],
+    name: 'setavaxStableTokenPair',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1928,6 +2018,11 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
         name: 'partySplit_',
         type: 'uint256',
       },
+      {
+        internalType: 'uint256',
+        name: 'stableTokenSplit_',
+        type: 'uint256',
+      },
     ],
     name: 'activateFeeSplit',
     outputs: [],
@@ -1987,8 +2082,47 @@ export const LIQUIDITY_POOL_MANAGER_ABI = [
     constant: true,
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'pair',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'conversionFactor',
+        type: 'uint256',
+      },
+    ],
+    name: 'getStableTokenLiquidity',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
     inputs: [],
     name: 'getAvaxPartyRatio',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'conversionFactor',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: 'getAvaxStableTokenRatio',
     outputs: [
       {
         internalType: 'uint256',

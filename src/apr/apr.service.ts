@@ -10,6 +10,8 @@ import {
   PARTY_ADDRESS,
   WAVAX_ADDRESS,
   WAVAX_PARTY_ADDRESS,
+  STABLE_ADDRESS,
+  WAVAX_STABLE_ADDRESS,
 } from '../utils/constants';
 
 @Injectable()
@@ -78,27 +80,42 @@ export class AprService {
       stakingAddress,
     );
 
-    // How much xPARTY is staked
-    const poolTokenBalance = await this.getBalance(
-      stakingTokenAddress,
-      stakingAddress,
-    );
+    // How much xPARTY is staked in this piñata
+    // const poolTokenBalance = await this.getBalance(
+    //   stakingTokenAddress,
+    //   stakingAddress,
+    // );
 
     // Total xPARTY supply
-    const poolTokenSupply = await this.getTotalSupply(stakingTokenAddress);
+    // const poolTokenSupply = await this.getTotalSupply(stakingTokenAddress);
 
-    // Get the two token addresses in the pool
-    const [token0, token1] = await this.getPoolTokens(stakingTokenAddress);
-
-    // Get how much AVAX and PARTY are in the AVAX-PARTY pool
-    const [pooledAVAX, pooledPARTY] = await Promise.all([
-      await this.getBalance(
+    const [
+      poolTokenBalance,
+      poolTokenSupply,
+      [token0, token1],
+      pooledAVAX,
+      pooledPARTY,
+      pooledAVAXForSTABLE,
+      pooledSTABLE,
+    ] = await Promise.all([
+      this.getBalance(stakingTokenAddress, stakingAddress),
+      this.getTotalSupply(stakingTokenAddress),
+      this.getPoolTokens(stakingTokenAddress),
+      this.getBalance(
         WAVAX_ADDRESS[this.chainId],
         WAVAX_PARTY_ADDRESS[this.chainId],
       ),
-      await this.getBalance(
+      this.getBalance(
         PARTY_ADDRESS[this.chainId],
         WAVAX_PARTY_ADDRESS[this.chainId],
+      ),
+      this.getBalance(
+        WAVAX_ADDRESS[this.chainId],
+        WAVAX_STABLE_ADDRESS[this.chainId],
+      ),
+      this.getBalance(
+        STABLE_ADDRESS[this.chainId],
+        WAVAX_STABLE_ADDRESS[this.chainId],
       ),
     ]);
 
@@ -106,34 +123,58 @@ export class AprService {
       return '0';
     }
 
-    const stakedAVAX = [token0.toLowerCase(), token1.toLowerCase()].includes(
-      WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
-    )
-      ? (
-          await this.getBalance(
-            WAVAX_ADDRESS[this.chainId],
-            stakingTokenAddress,
-          )
-        )
-          // Other side of pool has equal value
-          .mul(2)
-          // Not all xPARTY is staked
-          .mul(poolTokenBalance)
-          .div(poolTokenSupply)
-      : (
-          await this.getBalance(
-            PARTY_ADDRESS[this.chainId],
-            stakingTokenAddress,
-          )
-        )
-          // Other side of pool has equal value
-          .mul(2)
-          // Convert to AVAX
-          .mul(pooledAVAX)
-          .div(pooledPARTY)
-          // Not all xPARTY is staked
-          .mul(poolTokenBalance)
-          .div(poolTokenSupply);
+    let stakedAVAX: BigNumber;
+    if (
+      [token0.toLowerCase(), token1.toLowerCase()].includes(
+        WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
+      )
+    ) {
+      //WAVAX AS BASE CASE
+      stakedAVAX = (
+        await this.getBalance(WAVAX_ADDRESS[this.chainId], stakingTokenAddress)
+      )
+        // Other side of pool has equal value
+        .mul(2)
+        // Not all xPARTY is staked
+        .mul(poolTokenBalance)
+        .div(poolTokenSupply);
+    } else if (
+      [token0.toLowerCase(), token1.toLowerCase()].includes(
+        PARTY_ADDRESS[this.chainId]?.toLowerCase(),
+      )
+    ) {
+      //PARTY AS BASE CASE
+      (stakedAVAX = await this.getBalance(
+        PARTY_ADDRESS[this.chainId],
+        stakingTokenAddress,
+      ))
+        // Other side of pool has equal value
+        .mul(2)
+        // Convert to AVAX
+        .mul(pooledAVAX)
+        .div(pooledPARTY)
+        // Not all xPARTY is staked
+        .mul(poolTokenBalance)
+        .div(poolTokenSupply);
+    } else if (
+      [token0.toLowerCase(), token1.toLowerCase()].includes(
+        STABLE_ADDRESS[this.chainId]?.toLowerCase(),
+      )
+    ) {
+      //STABLE COIN AS BASE CASE
+      (stakedAVAX = await this.getBalance(
+        STABLE_ADDRESS[this.chainId],
+        stakingTokenAddress,
+      ))
+        // Other side of pool has equal value
+        .mul(2)
+        // Convert to AVAX
+        .mul(pooledAVAXForSTABLE)
+        .div(pooledSTABLE)
+        // Not all xPARTY is staked
+        .mul(poolTokenBalance)
+        .div(poolTokenSupply);
+    }
 
     if (stakedAVAX.toString() === '0') {
       return stakedAVAX.toString();
