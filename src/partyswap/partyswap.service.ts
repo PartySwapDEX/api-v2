@@ -1,7 +1,6 @@
 import { Interface } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HttpService, Injectable } from '@nestjs/common';
-import { AprService } from 'src/apr/apr.service';
 import {
   ChainId,
   ERC20_ABI,
@@ -12,7 +11,6 @@ import {
   PAIR_ABI,
   PARTY_ADDRESS,
   RPC_URL,
-  STAKING_REWARDS_ABI,
   WAVAX_ADDRESS,
   WAVAX_PARTY_ADDRESS,
 } from 'src/utils/constants';

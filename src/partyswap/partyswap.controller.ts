@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { request } from 'graphql-request';
-import { basename } from 'path';
 import { AprService } from 'src/apr/apr.service';
 import { ChainId, WAVAX_ADDRESS } from 'src/utils/constants';
 import { getPair, graphUrl } from './graphql/queries';
