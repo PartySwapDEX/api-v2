@@ -171,8 +171,10 @@ export class AprService {
       return stakedAVAX.toString();
     }
 
+    const rewardRate = await this.getRewardRate(stakingAddress);
+
     return (
-      (await this.getRewardRate(stakingAddress))
+      rewardRate
         // Reward rate is per second
         .mul(60 * 60 * 24 * 7 * 52)
         // Convert to AVAX
