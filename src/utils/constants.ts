@@ -35,7 +35,7 @@ export const WAVAX_ADDRESS = {
 
 export const WAVAX_PARTY_ADDRESS = {
   [ChainId.FUJI]: '0x4d5425e83b15004ce4f9f934ae802fca4b220ea9',
-  [ChainId.AVALANCHE]: '0xcD5043292d99D63f42f0447d77E5cA048506Bad6',
+  [ChainId.AVALANCHE]: '0x379842a6cd96a70ebce66004275ce0c68069df62',
 };
 
 export const WAVAX_STABLE_ADDRESS = {
