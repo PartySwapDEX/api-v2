@@ -88,6 +88,7 @@ export class AprService {
       pooledPARTY,
       pooledAVAXForSTABLE,
       pooledSTABLE,
+      rewardRate,
     ] = await Promise.all([
       this.getBalance(stakingTokenAddress, stakingAddress),
       this.getTotalSupply(stakingTokenAddress),
@@ -108,6 +109,7 @@ export class AprService {
         STABLE_ADDRESS[this.chainId],
         WAVAX_STABLE_ADDRESS[this.chainId],
       ),
+      this.getRewardRate(stakingAddress),
     ]);
 
     if (poolTokenSupply.toString() === '0' || pooledPARTY.toString() === '0') {
@@ -115,11 +117,16 @@ export class AprService {
     }
 
     let stakedAVAX: BigNumber;
-    if (
-      [token0.toLowerCase(), token1.toLowerCase()].includes(
-        WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
-      )
-    ) {
+    const avaxPool = [token0.toLowerCase(), token1.toLowerCase()].includes(
+      WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
+    );
+    const partyPool = [token0.toLowerCase(), token1.toLowerCase()].includes(
+      PARTY_ADDRESS[this.chainId]?.toLowerCase(),
+    );
+    const stablePool = [token0.toLowerCase(), token1.toLowerCase()].includes(
+      STABLE_ADDRESS[this.chainId]?.toLowerCase(),
+    );
+    if (avaxPool) {
       //WAVAX AS BASE CASE
       stakedAVAX = (
         await this.getBalance(WAVAX_ADDRESS[this.chainId], stakingTokenAddress)
@@ -129,16 +136,11 @@ export class AprService {
         // Not all xPARTY is staked
         .mul(poolTokenBalance)
         .div(poolTokenSupply);
-    } else if (
-      [token0.toLowerCase(), token1.toLowerCase()].includes(
-        PARTY_ADDRESS[this.chainId]?.toLowerCase(),
-      )
-    ) {
+    } else if (partyPool) {
       //PARTY AS BASE CASE
-      (stakedAVAX = await this.getBalance(
-        PARTY_ADDRESS[this.chainId],
-        stakingTokenAddress,
-      ))
+      stakedAVAX = (
+        await this.getBalance(PARTY_ADDRESS[this.chainId], stakingTokenAddress)
+      )
         // Other side of pool has equal value
         .mul(2)
         // Convert to AVAX
@@ -147,16 +149,11 @@ export class AprService {
         // Not all xPARTY is staked
         .mul(poolTokenBalance)
         .div(poolTokenSupply);
-    } else if (
-      [token0.toLowerCase(), token1.toLowerCase()].includes(
-        STABLE_ADDRESS[this.chainId]?.toLowerCase(),
-      )
-    ) {
+    } else if (stablePool) {
       //STABLE COIN AS BASE CASE
-      (stakedAVAX = await this.getBalance(
-        STABLE_ADDRESS[this.chainId],
-        stakingTokenAddress,
-      ))
+      stakedAVAX = (
+        await this.getBalance(STABLE_ADDRESS[this.chainId], stakingTokenAddress)
+      )
         // Other side of pool has equal value
         .mul(2)
         // Convert to AVAX
@@ -170,8 +167,6 @@ export class AprService {
     if (stakedAVAX.toString() === '0') {
       return stakedAVAX.toString();
     }
-
-    const rewardRate = await this.getRewardRate(stakingAddress);
 
     return (
       rewardRate

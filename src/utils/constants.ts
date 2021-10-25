@@ -9,7 +9,7 @@ export const RPC_URL = {
 };
 
 export const PARTY_ADDRESS = {
-  [ChainId.FUJI]: '0xCEAA8d36a189b3d8b867AD534D91A3Bdbd31686b',
+  [ChainId.FUJI]: '0x02048fe5d5849bfdb0ff2150c443c2a2a28fc0de',
   [ChainId.AVALANCHE]: '0x25afD99fcB474D7C336A2971F26966da652a92bc',
 };
 
