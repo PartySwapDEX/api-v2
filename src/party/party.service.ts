@@ -8,6 +8,11 @@ import {
   STAKING_REWARDS_ABI,
   PAIR_ABI,
   PARTY_ADDRESS,
+  JACUZZI_ADDRESS,
+  PARTY_STABLE_ADDRESS,
+  STABLE_ADDRESS,
+  WAVAX_PARTY_ADDRESS,
+  WAVAX_ADDRESS,
 } from '../utils/constants';
 
 @Injectable()
@@ -68,6 +73,47 @@ export class PartyService {
     } = await this.call(ERC20_ABI, erc20, 'balanceOf', [address]);
 
     return BigNumber.from(result);
+  }
+
+  async getJacuzziStats() {
+    const [
+      totalPartyInJacuzzi,
+      pooledStable,
+      pooledPartyInStable,
+      pooledAvax,
+      pooledPartyInAvax,
+    ] = await Promise.all([
+      this.getPNGBalance(JACUZZI_ADDRESS[this.chainId]),
+      this.getBalance(
+        STABLE_ADDRESS[this.chainId],
+        PARTY_STABLE_ADDRESS[this.chainId],
+      ),
+      this.getBalance(
+        PARTY_ADDRESS[this.chainId],
+        PARTY_STABLE_ADDRESS[this.chainId],
+      ),
+      this.getBalance(
+        WAVAX_ADDRESS[this.chainId],
+        WAVAX_PARTY_ADDRESS[this.chainId],
+      ),
+      this.getBalance(
+        PARTY_ADDRESS[this.chainId],
+        WAVAX_PARTY_ADDRESS[this.chainId],
+      ),
+    ]);
+
+    const totalPartyInJacuzziWAVAX = totalPartyInJacuzzi
+      .mul(pooledAvax)
+      .div(pooledPartyInAvax);
+    const totalPartyInJacuzziUSD = totalPartyInJacuzzi
+      .mul(pooledStable)
+      .div(pooledPartyInStable);
+
+    return {
+      totalPartyInJacuzzi,
+      totalPartyInJacuzziUSD,
+      totalPartyInJacuzziWAVAX,
+    };
   }
 
   call(

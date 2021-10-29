@@ -44,4 +44,10 @@ export class PartyController {
       )
       .toString();
   }
+
+  @Get('jacuzzi')
+  async getJacuzziStats(): Promise<any> {
+    this.partyService.setChainId(this.chainId);
+    return this.partyService.getJacuzziStats();
+  }
 }
