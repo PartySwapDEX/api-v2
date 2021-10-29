@@ -110,9 +110,9 @@ export class PartyService {
       .div(pooledPartyInStable);
 
     return {
-      totalPartyInJacuzzi,
-      totalPartyInJacuzziUSD,
-      totalPartyInJacuzziWAVAX,
+      totalPartyInJacuzzi: totalPartyInJacuzzi.toString(),
+      totalPartyInJacuzziUSD: totalPartyInJacuzziUSD.toString(),
+      totalPartyInJacuzziWAVAX: totalPartyInJacuzziWAVAX.toString(),
     };
   }
 
