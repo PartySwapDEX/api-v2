@@ -1,13 +1,12 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { Controller, Get, Param } from '@nestjs/common';
-
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
 import { PARTY_ADDRESS, TREASURY_VESTER_ADDRESS } from 'src/utils/constants';
-
 import { PartyService } from './party.service';
 
 @Controller('party')
 export class PartyController {
-  constructor(private readonly partyService: PartyService) {}
+  constructor(private readonly partyService: PartyService) { }
 
   chainId = 43114;
 
@@ -21,7 +20,8 @@ export class PartyController {
   }
 
   @Get('circulating')
-  async getCirculating(): Promise<string> {
+  async getCirculating(@Req() request: Request): Promise<string> {
+    const { query: { asUint256 } } = request;
     this.partyService.setChainId(this.chainId);
     const totalSupply = await this.partyService.getTotalSupply(
       PARTY_ADDRESS[this.chainId],
@@ -42,6 +42,7 @@ export class PartyController {
           '0x81b42dF04Bfd9329Ab897de2aE1b2543d68209Ce', // Genesis Address
         ),
       )
+      .div(BigNumber.from(asUint256 ? "1" : "10").pow("18"))
       .toString();
   }
 
