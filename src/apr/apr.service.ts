@@ -12,6 +12,8 @@ import {
   WAVAX_PARTY_ADDRESS,
   STABLE_ADDRESS,
   WAVAX_STABLE_ADDRESS,
+  WAVAX_PARTY_FOR_BOOSTED_ADDRESS,
+  PARTY_BOOSTED_ADDRESS,
 } from '../utils/constants';
 
 @Injectable()
@@ -74,7 +76,13 @@ export class AprService {
     return BigNumber.from(result);
   }
 
-  async getApr(stakingAddress: string) {
+  async getApr(stakingAddress: string, boosted: boolean = false) {
+    // these addresses are not consistant at fuji between v2 piñatas and boosted
+    const [wavax_party_pair, party_address] = [
+      boosted ? WAVAX_PARTY_FOR_BOOSTED_ADDRESS : WAVAX_PARTY_ADDRESS,
+      boosted ? PARTY_BOOSTED_ADDRESS : PARTY_ADDRESS,
+    ];
+
     // Address of token to stake
     const stakingTokenAddress = await this.getStakingTokenAddress(
       stakingAddress,
@@ -95,11 +103,11 @@ export class AprService {
       this.getPoolTokens(stakingTokenAddress),
       this.getBalance(
         WAVAX_ADDRESS[this.chainId],
-        WAVAX_PARTY_ADDRESS[this.chainId],
+        wavax_party_pair[this.chainId],
       ),
       this.getBalance(
         PARTY_ADDRESS[this.chainId],
-        WAVAX_PARTY_ADDRESS[this.chainId],
+        wavax_party_pair[this.chainId],
       ),
       this.getBalance(
         WAVAX_ADDRESS[this.chainId],
@@ -121,7 +129,7 @@ export class AprService {
       WAVAX_ADDRESS[this.chainId]?.toLowerCase(),
     );
     const partyPool = [token0.toLowerCase(), token1.toLowerCase()].includes(
-      PARTY_ADDRESS[this.chainId]?.toLowerCase(),
+      party_address[this.chainId]?.toLowerCase(),
     );
     const stablePool = [token0.toLowerCase(), token1.toLowerCase()].includes(
       STABLE_ADDRESS[this.chainId]?.toLowerCase(),
