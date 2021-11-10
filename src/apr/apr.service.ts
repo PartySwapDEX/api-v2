@@ -106,7 +106,7 @@ export class AprService {
         wavax_party_pair[this.chainId],
       ),
       this.getBalance(
-        PARTY_ADDRESS[this.chainId],
+        party_address[this.chainId],
         wavax_party_pair[this.chainId],
       ),
       this.getBalance(
@@ -147,7 +147,7 @@ export class AprService {
     } else if (partyPool) {
       //PARTY AS BASE CASE
       stakedAVAX = (
-        await this.getBalance(PARTY_ADDRESS[this.chainId], stakingTokenAddress)
+        await this.getBalance(party_address[this.chainId], stakingTokenAddress)
       )
         // Other side of pool has equal value
         .mul(2)
